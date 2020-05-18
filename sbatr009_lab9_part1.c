@@ -44,72 +44,35 @@ void set_PWM(double frequency) {
 	}
 
 
-#define button (~PINA & 0x07)
-enum STATES { DEFAULT, PLAYC, PLAYD, PLAYE } state;
-
-void tick() {
-	switch(state) { // State Paths
-		case DEFAULT:
-		switch(button) {
-			case 0x01:
-			state = PLAYC;
-			break;
-			case 0x02:
-			state = PLAYD;
-			break;
-			case 0x04:
-			state = PLAYE;
-			break;
-			default:
-			state = DEFAULT;
-			break;
-		}
-    break;
-		case PLAYC:
-		if (button == 0x01) {
-			state = PLAYC;
-		} else {
-			state = DEFAULT;
-		}
-		break;
-		case PLAYD:
-		if (button == 0x02) {
-			state = PLAYD;
-		} else {
-			state = DEFAULT;
-		}
-		break;
-		case PLAYE:
-		if (button == 0x04) {
-			state = PLAYE;
-		} else {
-			state = DEFAULT;
-		}
-		break;
-	}
-	switch(state) { //Actions
-		case DEFAULT:
-		set_PWM(0);
-		break;
-		case PLAYC:
-		set_PWM(261.63);
-		break;
-		case PLAYD:
-		set_PWM(293.66);
-		break;
-		case PLAYE:
-		set_PWM(329.63);
-		break;
-	}
-}
-
 int main(void) {
 	DDRA = 0x00; PORTA = 0xFF;
 	DDRB = 0xFF; PORTB = 0x00;
+	unsigned char button = 0x00;
 	PWM_on();
-	state = DEFAULT;
+
 	while(1) {
-		tick();
-	}
-  return 1;
-}
+		button = ~PINA & 0x07;
+
+	  	if(button == 0x01)  { // Conditional A
+                	set_PWM(261.63);
+                if(button==0)
+		       	break;
+        }
+        	else if(button == 0x02) { // Conditional B
+                	set_PWM(293.66);
+                if(button == 0)
+		       	break;
+        }
+        	else if(button == 0x04) { // Conditional C
+                	set_PWM(329.63);
+                if(button == 0)
+		       	break;
+        }
+        	else set_PWM(0.0); // Default
+
+        }
+
+        return 1;
+
+        }
+
